@@ -38,6 +38,9 @@ In a new terminal:
 ```sh
 cd fileUpload
 npm install
+
+[ For direct build and run Use: npx react-native run-android --port 3000 ]
+
 ```
 
 ## 4. Launch the Android app
