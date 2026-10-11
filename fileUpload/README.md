@@ -1,56 +1,75 @@
-# File Uploader
+# File Upload App
 
-A small React Native and TypeScript app for selecting and uploading files in 5 MB chunks.
+A React Native CLI app for choosing files and uploading them to the ChunkFlow API in 5 MiB chunks. The app and backend are in this repository: `fileUpload/` is the mobile app and `BE/` is the API.
 
-## Run the app
+This app was fully vibe-coded with AI assistance.
 
-Install dependencies:
+## What you need
+
+- Node.js 22.11 or newer and npm
+- Android Studio with the Android SDK installed
+- An Android emulator, or an Android phone with USB debugging enabled
+
+## 1. Start the backend
+
+Open a terminal at the repository root and follow the setup in [`BE/README.md`](../BE/README.md). Start the backend before launching the app.
+
+## 2. Set the API address
+
+Open `src/services/uploadService.tsx`. The default address is:
+
+```ts
+const BASE_URL = 'http://10.0.2.2:3000';
+```
+
+Keep this address when running the app in an Android emulator; it lets the emulator reach the backend on your computer.
+
+For a physical Android phone, the phone and computer must be on the same Wi-Fi network. Find your computer's local IP address and replace `10.0.2.2` with it, for example:
+
+```ts
+const BASE_URL = 'http://192.168.1.50:3000';
+```
+
+Use your computer's actual IP, and make sure the backend is configured for local network access as described in `BE/README.md`.
+
+## 3. Install the app dependencies
+
+In a new terminal:
 
 ```sh
+cd fileUpload
 npm install
 ```
 
-Start Metro on port 8081:
+## 4. Launch the Android app
+
+Start Metro from `fileUpload/`:
 
 ```sh
-npm start -- --port 8081
+npm start
 ```
 
-In a second terminal, run one platform:
+Leave Metro running. In another terminal, from `fileUpload/`, run:
 
 ```sh
-npm run android -- --port 8081
-npm run ios -- --port 8081
+npm run android
 ```
 
-For a first iOS setup, install CocoaPods dependencies with `cd ios && pod install` before running the iOS command.
+Keep the backend and Metro terminals open while using the app. Choose a file in the app to start uploading.
 
-The app expects the upload API at `http://10.0.2.2:3000`, which is the Android emulator address for a server running on your computer. Change `BASE_URL` in `src/services/uploadService.tsx` for the iOS simulator or a physical device.
+## Upload behavior
 
-The API should implement:
+- Files up to 100 MiB are uploaded in 5 MiB chunks.
+- Upload progress and status are shown for each file.
+- Failed uploads can be retried; the app checks the backend and sends missing chunks.
+- An upload in progress can be cancelled.
 
-- `POST /api/uploads/init`
-- `PUT /api/uploads/:uploadId/chunks/:chunkIndex`
-- `GET /api/uploads/:uploadId/status`
-- `POST /api/uploads/:uploadId/complete`
+## Run app checks
 
-## How it works
-
-- `src/components/filePickerButton.tsx` handles file selection and shows each file's size, progress, status, error, and available actions.
-- Files larger than 100 MB are rejected before upload, with an explanation shown in the app.
-- Each accepted file gets its own upload task. Files upload at the same time, and users can select more files while uploads are running.
-- `src/utils/chunkUploader.tsx` copies a selected file to app cache, slices it into 5 MB chunks, and sends those chunks one at a time. Progress is based on successful chunks.
-- The UI shows `Queued`, `Initializing`, `Checking status`, `Uploading`, `Success`, `Failed`, `Cancelled`, and `Rejected` states. A small in-app notification reports success, failure, and rejection.
-- Cancel stops the current chunk request and prevents later chunks from being sent. Chunks already received by the backend may remain there.
-- Retry checks the backend status and uploads chunks that are still missing. It only retries the selected file.
-- Backend errors and network failures produce a `Failed` state and a visible error message. No random failures are simulated.
-
-The UI state is kept in the screen with React state; active request handles are kept in a ref so each file can be cancelled independently. Uploads are not saved across app restarts. A production backend would also need to define upload expiry and cleanup for cancelled or abandoned sessions.
-
-## Checks
+From `fileUpload/`:
 
 ```sh
+npm test -- --runInBand
 npm run lint
 npx tsc --noEmit
-npm test -- --runInBand
 ```
