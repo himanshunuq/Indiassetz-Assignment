@@ -24,7 +24,7 @@ The API will be available at `http://127.0.0.1:3000`. Keep this terminal open wh
 
 ## Connect a phone on your Wi-Fi
 
-To upload from a physical phone, the phone and computer must be on the same Wi-Fi network.
+To upload from a Emulator/Physical phone, the phone and computer must be on the same Wi-Fi network.
 
 1. In `BE/.env`, set `HOST=0.0.0.0`.
 2. Find your computer's Wi-Fi IP address. On a Mac, run `ipconfig getifaddr en0`.
