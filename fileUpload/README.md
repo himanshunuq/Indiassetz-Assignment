@@ -2,7 +2,6 @@
 
 A React Native CLI app for choosing files and uploading them to the ChunkFlow API in 5 MiB chunks. The app and backend are in this repository: `fileUpload/` is the mobile app and `BE/` is the API.
 
-This app was fully vibe-coded with AI assistance.
 
 ## What you need
 
